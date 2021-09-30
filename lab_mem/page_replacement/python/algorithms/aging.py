@@ -11,18 +11,28 @@ ALGORITHM_AGING_NBITS = 8
 """How many bits to use for the Aging algorithm"""
 
 class Aging:
-
   def __init__(self):
-    pass
-
+    self.frames = {}
+    self.pages = {}
+    self.ALGORITHM_AGING_NBITS = 8
+  
   def put(self, frameId):
-    pass
+    self.frames[frameId] = "1" + (self.ALGORITHM_AGING_NBITS - 1) * "0"
 
   def evict(self):
-    pass
+    mn = ""
+    for frame in self.frames:
+      if mn == "" or int(self.frames[frame], 2) < int(self.frames[mn], 2):
+        mn = frame
+    
+    self.frames.pop(mn)
+    io = self.pages.pop(mn)
+    return (mn, io)
 
   def clock(self):
-    pass
+    for frame in self.frames:
+      self.frames[frame] = "0" + self.frames[frame][1:]
 
   def access(self, frameId, isWrite):
-    pass
+    self.pages[frameId] = isWrite
+    self.frames[frameId] = "1" + self.frames[frameId][1:]
