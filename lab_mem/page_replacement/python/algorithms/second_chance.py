@@ -10,16 +10,29 @@
 class SecondChance:
 
   def __init__(self):
-    pass
+    from queue import Queue
+    self.frames = Queue()
+    self.second_chance = {}
+    self.pages = {}
 
   def put(self, frameId):
-    pass
+    self.frames.put(frameId)
+    self.second_chance[frameId] = 0
 
   def evict(self):
-    pass
+    while(True):
+      frameId = self.frames.get()
+      if(self.second_chance[frameId] == 0):
+        self.frames.put(frameId)
+        self.second_chance[frameId] = 1
+      else:
+        self.second_chance.pop(frameId)
+        io = self.pages.pop(frameId)
+        return (frameId, io)
 
   def clock(self):
     pass
 
   def access(self, frameId, isWrite):
-    pass
+    self.pages[frameId] = isWrite
+    self.second_chance[frameId] = 0
